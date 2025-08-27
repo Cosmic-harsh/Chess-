@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess With Dares</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .game-area {
+                flex-direction: row;
+            }
+        }
+        
+        .chess-board {
+            flex: 1;
+            background: #f0d9b5;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .board {
+            width: 100%;
+            aspect-ratio: 1/1;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            border: 2px solid #755;
+        }
+        
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .square:hover {
+            opacity: 0.8;
+        }
+        
+        .white {
+            background: #f0d9b5;
+        }
+        
+        .black {
+            background: #b58863;
+        }
+        
+        .selected {
+            background: #aaf;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .possible-move {
+            position: relative;
+        }
+        
+        .possible-move::after {
+            content: "";
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+        }
+        
+        .dare-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .dare-container {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dare-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #ffcc00;
+        }
+        
+        .dare-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 500;
+            padding: 10px;
+        }
+        
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .player-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+        
+        .player1 .player-icon {
+            background: #ff5252;
+        }
+        
+        .player2 .player-icon {
+            background: #4caf50;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: #ffcc00;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 #e6b800;
+        }
+        
+        button:hover {
+            background: #ffd633;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #e6b800;
+        }
+        
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #e6b800;
+        }
+        
+        .special {
+            background: #ff5252;
+            box-shadow: 0 4px 0 #d32f2f;
+            color: white;
+        }
+        
+        .special:hover {
+            background: #ff6b6b;
+            box-shadow: 0 6px 0 #d32f2f;
+        }
+        
+        .special:active {
+            box-shadow: 0 2px 0 #d32f2f;
+        }
+        
+        .message {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            min-height: 24px;
+            color: #ffcc00;
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Chess With Dares</h1>
+            <p class="subtitle">The game where every move can lead to fun challenges!</p>
+        </header>
+        
+        <div class="player-info">
+            <div class="player player1">
+                <div class="player-icon"></div>
+                <span>Player 1 (You)</span>
+            </div>
+            <div class="player player2">
+                <div class="player-icon"></div>
+                <span>Player 2 (Partner)</span>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="chess-board">
+                <div class="board" id="chessboard">
+                    <!-- Chess board will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="dare-section">
+                <div class="dare-container">
+                    <h2 class="dare-title">Current Dare</h2>
+                    <div class="dare-content" id="dareText">
+                        Dare will appear here when triggered by specific moves
+                    </div>
+                </div>
+                
+                <div class="message" id="gameMessage"></div>
+                
+                <div class="controls">
+                    <button id="newGameBtn">New Game</button>
+                    <button id="newDareBtn" class="special">Random Dare</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>How to Play</h3>
+            <ul>
+                <li>Click on a piece to select it, then click on a highlighted square to move</li>
+                <li>When you check your opponent, they get a dare!</li>
+                <li>Capturing a piece triggers a dare for your opponent</li>
+                <li>Checkmate results in a special dare celebration!</li>
+                <li>Use the "Random Dare" button to send a dare anytime</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const board = document.getElementById('chessboard');
+            const dareText = document.getElementById('dareText');
+            const gameMessage = document.getElementById('gameMessage');
+            const newGameBtn = document.getElementById('newGameBtn');
+            const newDareBtn = document.getElementById('newDareBtn');
+            
+            // Sample dares - you can replace these with your own
+            const dares = [
+                "Do 10 squats",
+                "Sing a song for 30 seconds",
+                "Tell a funny joke",
+                "Dance for 20 seconds",
+                "Imitate a famous person",
+                "Say the alphabet backwards",
+                "Do your best impression of a chicken",
+                "Recite a poem from memory",
+                "Do 5 pushups",
+                "Whisper a secret",
+                "Say three nice things about your opponent",
+                "Act like your favorite animal for 30 seconds"
+            ];
+            
+            const specialDares = [
+                "Perform a victory dance!",
+                "Choose a dare for your opponent!",
+                "Plan a special date for your partner!",
+                "Do 15 jumping jacks while singing!"
+            ];
+            
+            let selectedPiece = null;
+            let currentPlayer = 1;
+            let gameOver = false;
+            
+            // Initialize the chess board
+            function initializeBoard() {
+                board.innerHTML = '';
+                
+                // Create 8x8 board
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const square = document.createElement('div');
+                        square.classList.add('square');
+                        square.classList.add((row + col) % 2 === 0 ? 'white' : 'black');
+                        square.dataset.row = row;
+                        square.dataset.col = col;
+                        
+                        // Add pieces for demonstration
+                        if (row === 1) {
+                            square.innerHTML = '♟';
+                            square.dataset.player = '2';
+                        } else if (row === 6) {
+                            square.innerHTML = '♙';
+                            square.dataset.player = '1';
+                        } else if (row === 0 || row === 7) {
+                            const pieces = ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'];
+                            square.innerHTML = pieces[col];
+                            square.dataset.player = row === 0 ? '2' : '1';
+                        }
+                        
+                        square.addEventListener('click', handleSquareClick);
+                        board.appendChild(square);
+                    }
+                }
+                
+                gameMessage.textContent = "Player 1's turn";
+                dareText.textContent = "Dare will appear here when triggered by specific moves";
+                currentPlayer = 1;
+                gameOver = false;
+            }
+            
+            // Handle square clicks
+            function handleSquareClick(event) {
+                if (gameOver) return;
+                
+                const square = event.target;
+                const row = parseInt(square.dataset.row);
+                const col = parseInt(square.dataset.col);
+                const piecePlayer = square.dataset.player;
+                
+                // If no piece is selected yet
+                if (!selectedPiece) {
+                    // Can only select own pieces
+                    if (piecePlayer && parseInt(piecePlayer) === currentPlayer) {
+                        selectedPiece = square;
+                        square.classList.add('selected');
+                        highlightPossibleMoves(row, col);
+                    }
+                } else {
+                    // If clicking on own piece again, change selection
+                    if (piecePlayer && parseInt(piecePlayer) === currentPlayer) {
+                        clearHighlights();
+                        selectedPiece.classList.remove('selected');
+                        selectedPiece = square;
+                        square.classList.add('selected');
+                        highlightPossibleMoves(parseInt(square.dataset.row), parseInt(square.dataset.col));
+                        return;
+                    }
+                    
+                    // Check if move is valid
+                    const selectedRow = parseInt(selectedPiece.dataset.row);
+                    const selectedCol = parseInt(selectedPiece.dataset.col);
+                    
+                    if (isValidMove(selectedRow, selectedCol, row, col)) {
+                        // Check if capture occurs
+                        const wasCapture = !!square.innerHTML;
+                        
+                        // Move piece
+                        square.innerHTML = selectedPiece.innerHTML;
+                        square.dataset.player = selectedPiece.dataset.player;
+                        selectedPiece.innerHTML = '';
+                        delete selectedPiece.dataset.player;
+                        
+                        clearHighlights();
+                        selectedPiece.classList.remove('selected');
+                        selectedPiece = null;
+                        
+                        // Handle dares based on move type
+                        if (wasCapture) {
+                            triggerDare(false);
+                        }
+                        
+                        // Check for check (simplified for demo)
+                        if (Math.random() > 0.7) {
+                            gameMessage.textContent = `Player ${currentPlayer} has put the opponent in check!`;
+                            triggerDare(true);
+                        }
+                        
+                        // Check for checkmate (simplified for demo)
+                        if (Math.random() > 0.9) {
+                            gameMessage.textContent = `Checkmate! Player ${currentPlayer} wins!`;
+                            triggerSpecialDare();
+                            gameOver = true;
+                            return;
+                        }
+                        
+                        // Switch player
+                        currentPlayer = currentPlayer === 1 ? 2 : 1;
+                        gameMessage.textContent = `Player ${currentPlayer}'s turn`;
+                    }
+                }
+            }
+            
+            // Highlight possible moves (simplified for demo)
+            function highlightPossibleMoves(row, col) {
+                const piece = document.querySelector(`.square[data-row="${row}"][data-col="${col}"]`).innerHTML;
+                
+                // Very simplified movement logic for demo
+                const moves = [];
+                
+                if (piece === '♙' || piece === '♟') { // Pawn
+                    const direction = piece === '♙' ? -1 : 1;
+                    moves.push([row + direction, col]);
+                    
+                    // Check for captures
+                    if (col > 0) moves.push([row + direction, col - 1]);
+                    if (col < 7) moves.push([row + direction, col + 1]);
+                } else {
+                    // Other pieces can move more freely in this demo
+                    for (let i = 0; i < 8; i++) {
+                        for (let j = 0; j < 8; j++) {
+                            if (i !== row || j !== col) {
+                                moves.push([i, j]);
+                            }
+                        }
+                    }
+                }
+                
+                moves.forEach(([r, c]) => {
+                    const square = document.querySelector(`.square[data-row="${r}"][data-col="${c}"]`);
+                    if (square) {
+                        square.classList.add('possible-move');
+                    }
+                });
+            }
+            
+            // Clear highlight from all squares
+            function clearHighlights() {
+                document.querySelectorAll('.square.possible-move').forEach(square => {
+                    square.classList.remove('possible-move');
+                });
+            }
+            
+            // Check if move is valid (simplified for demo)
+            function isValidMove(fromRow, fromCol, toRow, toCol) {
+                const square = document.querySelector(`.square[data-row="${fromRow}"][data-col="${fromCol}"]`);
+                if (!square.classList.contains('possible-move')) return false;
+                
+                // Additional checks would go here in a real chess game
+                return true;
+            }
+            
+            // Trigger a random dare
+            function triggerDare(isCheck) {
+                const randomDare = dares[Math.floor(Math.random() * dares.length)];
+                dareText.textContent = randomDare;
+                
+                if (isCheck) {
+                    gameMessage.textContent = `Check! ${currentPlayer === 1 ? 'Player 2' : 'Player 1'} must complete a dare!`;
+                } else {
+                    gameMessage.textContent = `Piece captured! ${currentPlayer === 1 ? 'Player 2' : 'Player 1'} must complete a dare!`;
+                }
+            }
+            
+            // Trigger a special dare for checkmate
+            function triggerSpecialDare() {
+                const randomSpecialDare = specialDares[Math.floor(Math.random() * specialDares.length)];
+                dareText.textContent = `CHECKMATE! SPECIAL DARE: ${randomSpecialDare}`;
+            }
+            
+            // New game button
+            newGameBtn.addEventListener('click', initializeBoard);
+            
+            // New dare button
+            newDareBtn.addEventListener('click', function() {
+                triggerDare(false);
+                gameMessage.textContent = `Random dare for ${currentPlayer === 1 ? 'Player 2' : 'Player 1'}!`;
+            });
+            
+            // Initialize the game
+            initializeBoard();
+        });
+    </script>
+</body>
+</html>
